@@ -1,0 +1,181 @@
+{% extends 'student/student.html' %}
+
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'timetable/Timetable.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div id="courseTable"></div>
+    <table class="layui-hide" id="coursesTable" lay-filter="demo2"></table>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'timetable/Timetables.min.js' %}"></script>
+    <script>
+        var timetables = [
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        ];
+        var timetableType = [
+            [{index: '1', name: '8:00'}, 1],
+            [{index: '2', name: '8:55'}, 1],
+            [{index: '3', name: '9:55'}, 1],
+            [{index: '4', name: '10:50'}, 1],
+            [{index: '5', name: '11:45'}, 1],
+            [{index: '6', name: '13:30'}, 1],
+            [{index: '7', name: '14:25'}, 1],
+            [{index: '8', name: '15:25'}, 1],
+            [{index: '9', name: '16:20'}, 1],
+            [{index: '10', name: '17:15'}, 1],
+            [{index: '11', name: '18:30'}, 1],
+            [{index: '12', name: '19:25'}, 1],
+            [{index: '13', name: '20:20'}, 1],
+            [{index: '14', name: '21:15'}, 1],
+        ];
+        var week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+        var highlightWeek = new Date().getDay();
+        var styles = {
+            Gheight: 40,
+            leftHandWidth: 50,
+            palette: ['#ff6633', '#eeeeee']
+        };
+        // 实例化(初始化课表)
+        var Timetable = new Timetables({
+            el: '#courseTable',
+            timetables: timetables,
+            week: week,
+            timetableType: timetableType,
+            highlightWeek: highlightWeek,
+            gridOnClick: function (e) {
+                alert(e.name + '  ' + e.week + ', 第' + e.index + '节课, 课长' + e.length + '节');
+                console.log(e)
+            },
+            styles: styles
+        });
+
+        //重新设置参数 渲染
+        function onChange(courseListOther) {
+            Timetable.setOption({
+                timetables: courseListOther,
+                week: week,
+                styles: {
+                    palette: ['#dedcda', '#ff4081']
+                }
+            })
+        };
+    </script>
+    <script>
+
+        layui.use('element', function () {
+            var element = layui.element;
+
+        });
+
+        layui.use('table', function () {
+            var table = layui.table;
+
+            table.render({
+                elem: '#coursesTable'
+                , url: "{% url 'showSelectedCourse' %}"
+                , limit: 10
+                , method: 'get'
+                , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                , cols: [[
+                    {field: 'course_id', title: '课程代码', sort: true}
+                    , {field: 'course_name', title: '课程名称'}
+                    , {field: 'ctime_slot_id', title: '上课时间', sort: true}
+                ]]
+                , parseData: function (res) { //res 即为原始返回的数据
+                    var result = res["list"];
+                    var changelist = [
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                    ];
+                    var days = new Map();
+                    days.set("Mon", 0);
+                    days.set("Tue", 1);
+                    days.set("Wed", 2);
+                    days.set("Thurs", 3);
+                    days.set("Fri", 4);
+                    days.set("Sat", 5);
+                    days.set("Sun", 6);
+                    var slot = new Map();
+                    slot.set("8:00:00", 0);
+                    slot.set("8:55:00", 1);
+                    slot.set("9:55:00", 2);
+                    slot.set("10:50:00", 3);
+                    slot.set("11:45:00", 4);
+                    slot.set("13:30:00", 5);
+                    slot.set("14:25:00", 6);
+                    slot.set("15:25:00", 7);
+                    slot.set("16:20:00", 8);
+                    slot.set("17:15:00", 9);
+                    slot.set("18:30:00", 10);
+                    slot.set("19:25:00", 11);
+                    slot.set("20:20:00", 12);
+                    slot.set("21:15:00", 13);
+                    slot.set("8:45:00", 0);
+                    slot.set("9:40:00", 1);
+                    slot.set("10:40:00", 2);
+                    slot.set("11:35:00", 3);
+                    slot.set("12:30:00", 4);
+                    slot.set("14:15:00", 5);
+                    slot.set("15:10:00", 6);
+                    slot.set("16:10:00", 7);
+                    slot.set("17:05:00", 8);
+                    slot.set("18:00:00", 9);
+                    slot.set("19:15:00", 10);
+                    slot.set("20:10:00", 11);
+                    slot.set("21:05:00", 12);
+                    slot.set("22:00:00", 13);
+                    for (let i = 0; i < result.length; i++) {
+                        var coursename = result[i]["course_name"];
+                        var time = result[i]["ctime_slot_id"];
+                        var times = time.split(";");
+                        for (let j = 0; j < times.length - 1; j++) {
+                            var day = times[j].split(" ")[0];
+                            day = days.get(day);
+                            var start = times[j].split(" ")[1].split("-")[0];
+                            start = slot.get(start);
+                            var end = times[j].split("-")[1];
+                            end = slot.get(end);
+                            for (var k = start; k <= end; k++) {
+                                changelist[day][k] = coursename
+                            }
+                        }
+                    }
+                    onChange(changelist);
+                    return {
+                        "code": 0, //解析接口状态
+                        "msg": "", //解析提示文本
+                        "count": res.totalNum, //解析数据长度
+                        "data": res.list//解析数据列表
+                    };
+                }
+                , id: 'testReload2'
+                , page: true
+            });
+
+
+        });
+
+
+    </script>
+    <script>
+        layui.use('element', function () {
+            var element = layui.element;
+        });
+    </script>
+
+{% endblock %}

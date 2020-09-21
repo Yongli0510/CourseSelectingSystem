@@ -1,0 +1,13 @@
+{% extends 'student/student.html' %}
+
+{% block body %}
+    <p>学号：{{ s_id }}</p>
+    <p>姓名：{{ name }}</p>
+    <p>所在院系：{{ dept_name }}</p>
+    {% ifequal phone_num None %}
+        <p>联系电话：无</p>
+        {% else %}
+        <p>联系电话：{{ phone_num }}</p>
+    {% endifequal %}
+    <p>总学分：{{ tot_cred }}</p>
+{% endblock %}

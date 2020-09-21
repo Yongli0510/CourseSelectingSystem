@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block header-name %}(学生界面){% endblock %}
+
+{% block header-nav %}
+    <li class="layui-nav-item">
+        <a href="javascript:">
+          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+          我的
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="{% url 'studentInfo' %}">个人信息</a></dd>
+          <dd><a href="{% url 'studentInfoManage' %}">修改信息</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href='{% url 'login' %}'>退出登录</a></li>
+{% endblock %}
+
+{% block side-nav %}
+
+    <li class="layui-nav-item {% block nav1 %}{% endblock %}">
+        <a href="{% url 'courseManage' %}">选/退课</a>
+
+    </li>
+
+    <li class="layui-nav-item {% block nav2 %}{% endblock %}">
+        <a href="{% url 'courseTable' %}">我的课程表</a>
+    </li>
+
+    <li class="layui-nav-item">
+        <a href="{% url 'studentExamList' %}">我的考试信息</a>
+    </li>
+
+    <li class="layui-nav-item {% block nav3 %}{% endblock %}">
+        <a href="{% url 'transcript' %}">我的成绩单</a>
+    </li>
+
+    <li class="layui-nav-item {% block nav4 %}{% endblock %}">
+        <a href="{% url 'studentCourseApply' %}">选课事务申请</a>
+
+    </li>
+
+{% endblock %}
